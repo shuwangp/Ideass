@@ -16,18 +16,29 @@ import api from '../config/api.js';
 
 class AuthService {
   /**
-   * @param {LoginData} data
+   * @param {{email?: string, username?: string, password: string}} data
    * @returns {Promise<import('../types/index.js').AuthUser>}
    */
   async login(data) {
-    const response = await api.post('/auth/login', data);
-    if (response.data.success) {
-      const { user, token } = response.data.data;
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      return response.data.data;
+    try {
+      const response = await api.post('/auth/login', data);
+      if (response.data.success) {
+        const { user, token } = response.data.data;
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        return response.data.data;
+      }
+      const err = new Error(response.data.message || 'Login failed');
+      if (response.data.errors) err.details = response.data.errors;
+      throw err;
+    } catch (error) {
+      if (error.response?.data) {
+        const err = new Error(error.response.data.message || 'Login failed');
+        if (error.response.data.errors) err.details = error.response.data.errors;
+        throw err;
+      }
+      throw error;
     }
-    throw new Error(response.data.message || 'Login failed');
   }
 
   /**
@@ -35,14 +46,25 @@ class AuthService {
    * @returns {Promise<import('../types/index.js').AuthUser>}
    */
   async register(data) {
-    const response = await api.post('/auth/register', data);
-    if (response.data.success) {
-      const { user, token } = response.data.data;
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      return response.data.data;
+    try {
+      const response = await api.post('/auth/register', data);
+      if (response.data.success) {
+        const { user, token } = response.data.data;
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        return response.data.data;
+      }
+      const err = new Error(response.data.message || 'Registration failed');
+      if (response.data.errors) err.details = response.data.errors;
+      throw err;
+    } catch (error) {
+      if (error.response?.data) {
+        const err = new Error(error.response.data.message || 'Registration failed');
+        if (error.response.data.errors) err.details = error.response.data.errors;
+        throw err;
+      }
+      throw error;
     }
-    throw new Error(response.data.message || 'Registration failed');
   }
 
   async logout() {

@@ -23,10 +23,18 @@ export const RegisterForm = () => {
   const {
     register,
     handleSubmit,
+    setError,
+    watch,
     formState: { errors }
   } = useForm({
     resolver: yupResolver(schema)
   });
+
+  const passwordValue = watch('password') || '';
+  const passHasMin = passwordValue.length >= 6;
+  const passHasUpper = /[A-Z]/.test(passwordValue);
+  const passHasLower = /[a-z]/.test(passwordValue);
+  const passHasNumber = /\d/.test(passwordValue);
 
   const onSubmit = async (data) => {
     try {
@@ -35,7 +43,28 @@ export const RegisterForm = () => {
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.message || 'Registration failed');
+      if (error.details && Array.isArray(error.details)) {
+        error.details.forEach((e) => {
+          const field = e.field;
+          const message = e.message || 'Invalid value';
+          // Map backend fields to our inputs
+          const fieldMap = {
+            username: 'username',
+            email: 'email',
+            password: 'password',
+            confirmPassword: 'confirmPassword',
+          };
+          const target = fieldMap[field];
+          if (target) {
+            setError(target, { type: 'server', message });
+          }
+        });
+        // Optional toast summary
+        const first = error.details[0];
+        if (first) toast.error(first.message);
+      } else {
+        toast.error(error.message || 'Registration failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +84,7 @@ export const RegisterForm = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Removed first/last name fields per requirement */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
                 Username
@@ -88,9 +118,10 @@ export const RegisterForm = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
+              <p className="text-xs text-gray-500 mb-2">Must include uppercase, lowercase, and a number (min 6 characters).</p>
               <input
                 {...register('password')}
                 type="password"

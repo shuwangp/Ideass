@@ -37,14 +37,16 @@ const validateUserRegistration = [
         .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
     
     body('firstName')
+        .optional()
         .trim()
-        .isLength({ min: 1, max: 50 })
-        .withMessage('First name is required and cannot exceed 50 characters'),
+        .isLength({ min: 0, max: 50 })
+        .withMessage('First name cannot exceed 50 characters'),
     
     body('lastName')
+        .optional()
         .trim()
-        .isLength({ min: 1, max: 50 })
-        .withMessage('Last name is required and cannot exceed 50 characters'),
+        .isLength({ min: 0, max: 50 })
+        .withMessage('Last name cannot exceed 50 characters'),
     
     body('department')
         .optional()
@@ -58,14 +60,26 @@ const validateUserRegistration = [
 // User login validation
 const validateUserLogin = [
     body('email')
+        .optional()
         .isEmail()
         .withMessage('Please provide a valid email address')
         .normalizeEmail(),
-    
+    body('username')
+        .optional()
+        .isLength({ min: 3, max: 30 })
+        .withMessage('Username must be between 3 and 30 characters'),
     body('password')
         .notEmpty()
         .withMessage('Password is required'),
-    
+    (req, res, next) => {
+        if (!req.body.email && !req.body.username) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide either email or username'
+            });
+        }
+        next();
+    },
     handleValidationErrors
 ];
 

@@ -82,10 +82,11 @@ const registerUser = async (req, res) => {
 // @access  Public
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, username, password } = req.body;
 
-        // Find user by email and include password field
-        const user = await User.findOne({ email }).select('+password');
+        // Find user by email OR username and include password field
+        const query = email ? { email } : { username };
+        const user = await User.findOne(query).select('+password');
         
         if (!user) {
             return res.status(401).json({
