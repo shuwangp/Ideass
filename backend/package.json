@@ -1,13 +1,16 @@
 {
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
     "express-validator": "^7.2.1",
     "init": "^0.1.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.0"
+    "mongoose": "^8.18.0",
+    "openai": "^5.20.1"
   },
   "scripts": {
     "start": "node server.js",

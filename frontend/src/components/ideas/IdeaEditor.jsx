@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { motion } from 'framer-motion';
 import { Button } from '../common/Button.jsx';
 import { SparklesIcon } from '@heroicons/react/24/outline';
+import { LoadingSpinner } from '../common/LoadingSpinner.jsx';
+import { Modal } from '../common/Modal.jsx';
 
 const schema = yup.object({
   title: yup.string().required('Title is required').min(3, 'Title must be at least 3 characters'),
@@ -38,7 +40,7 @@ const priorities = [
  * @param {import('../../types/index.js').Idea} [props.idea]
  * @param {(data: any) => void} props.onSubmit
  * @param {boolean} [props.isLoading]
- * @param {() => void} [props.onGenerateAISuggestions]
+ * @param {(data: any) => Promise<any>} [props.onGenerateAISuggestions]
  */
 export const IdeaEditor = ({
   idea,
@@ -46,7 +48,10 @@ export const IdeaEditor = ({
   isLoading = false,
   onGenerateAISuggestions,
 }) => {
-  const [tagInput, setTagInput] = React.useState('');
+  const [tagInput, setTagInput] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const {
     register,
@@ -95,6 +100,39 @@ export const IdeaEditor = ({
     }
   };
 
+  const handleGenerateAI = async () => {
+    if (!onGenerateAISuggestions) return;
+    
+    const currentData = {
+      title: watch('title'),
+      description: watch('description'),
+      category: watch('category'),
+      priority: watch('priority'),
+      tags: watch('tags'),
+    };
+
+    if (!currentData.title && !currentData.description) {
+      alert('Please enter at least a title or description before generating AI suggestions.');
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    try {
+      const suggestions = await onGenerateAISuggestions(currentData);
+      setAiSuggestions(suggestions);
+      setShowAIModal(true);
+    } catch (error) {
+      console.error('AI generation error:', error);
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
+  const applyAISuggestion = (field, value) => {
+    setValue(field, value);
+    setShowAIModal(false);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -130,11 +168,12 @@ export const IdeaEditor = ({
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={onGenerateAISuggestions}
+                onClick={handleGenerateAI}
+                isLoading={isGeneratingAI}
                 className="flex items-center"
               >
                 <SparklesIcon className="h-4 w-4 mr-1" />
-                AI Assist
+                {isGeneratingAI ? 'Generating...' : 'AI Assist'}
               </Button>
             )}
           </div>
@@ -286,6 +325,128 @@ export const IdeaEditor = ({
           </Button>
         </div>
       </form>
+
+      {/* AI Suggestions Modal */}
+      {showAIModal && aiSuggestions && (
+        <Modal
+          isOpen={showAIModal}
+          onClose={() => setShowAIModal(false)}
+          title="🤖 AI Suggestions"
+          size="lg"
+        >
+          <div className="space-y-6">
+            {/* Improved Title */}
+            {aiSuggestions.improvedTitle && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Improved Title:</h4>
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-gray-800 mb-2">{aiSuggestions.improvedTitle}</p>
+                  <Button
+                    size="sm"
+                    onClick={() => applyAISuggestion('title', aiSuggestions.improvedTitle)}
+                  >
+                    Apply Title
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Improved Description */}
+            {aiSuggestions.improvedDescription && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Improved Description:</h4>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                  <p className="text-gray-800 whitespace-pre-wrap mb-2">
+                    {aiSuggestions.improvedDescription}
+                  </p>
+                  <Button
+                    size="sm"
+                    onClick={() => applyAISuggestion('description', aiSuggestions.improvedDescription)}
+                  >
+                    Apply Description
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Suggested Tags */}
+            {aiSuggestions.suggestedTags && aiSuggestions.suggestedTags.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Suggested Tags:</h4>
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {aiSuggestions.suggestedTags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => applyAISuggestion('tags', aiSuggestions.suggestedTags)}
+                  >
+                    Apply Tags
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Implementation Steps */}
+            {aiSuggestions.implementationSteps && aiSuggestions.implementationSteps.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Implementation Steps:</h4>
+                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <ol className="list-decimal list-inside space-y-1">
+                    {aiSuggestions.implementationSteps.map((step, index) => (
+                      <li key={index} className="text-gray-800">{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            )}
+
+            {/* Potential Challenges */}
+            {aiSuggestions.potentialChallenges && aiSuggestions.potentialChallenges.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Potential Challenges:</h4>
+                <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                  <ul className="list-disc list-inside space-y-1">
+                    {aiSuggestions.potentialChallenges.map((challenge, index) => (
+                      <li key={index} className="text-gray-800">{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Success Metrics */}
+            {aiSuggestions.successMetrics && aiSuggestions.successMetrics.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Success Metrics:</h4>
+                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                  <ul className="list-disc list-inside space-y-1">
+                    {aiSuggestions.successMetrics.map((metric, index) => (
+                      <li key={index} className="text-gray-800">{metric}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={() => setShowAIModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </motion.div>
   );
 };

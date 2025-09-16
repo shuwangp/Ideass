@@ -13,7 +13,7 @@ class AnalyticsService {
         totalUsers: stats.totalUsers ?? 0,
         totalIdeas: stats.totalIdeas ?? 0,
         totalComments: stats.totalComments ?? 0,
-        totalUpvotes: stats.totalVotes ?? 0,
+        totalUpvotes: stats.totalUpvotes ?? 0,
       };
     }
     throw new Error('Failed to fetch analytics');

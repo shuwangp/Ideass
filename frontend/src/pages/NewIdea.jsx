@@ -2,22 +2,21 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { IdeaEditor } from '../components/ideas/IdeaEditor.jsx';
-import { useCreateIdea, useGenerateAISuggestions } from '../hooks/useIdeas.js';
+import { useCreateIdea } from '../hooks/useIdeas.js';
 import { useAuth } from '../hooks/useAuth.js';
+import { aiService } from '../services/aiService.js';
 import toast from 'react-hot-toast';
 
 export const NewIdea = () => {
   const navigate = useNavigate();
   const createIdea = useCreateIdea();
-  const generateAISuggestions = useGenerateAISuggestions();
-  const { user } = useAuth(); // เพิ่มบรรทัดนี้
+  const { user } = useAuth();
 
- 
   const handleSubmit = async (data) => {
     try {
       const newIdea = await createIdea.mutateAsync({
         ...data,
-        author: user.id, // เพิ่ม author
+        author: user.id,
       });
       navigate(`/ideas/${newIdea.id}`);
     } catch (error) {
@@ -25,8 +24,14 @@ export const NewIdea = () => {
     }
   };
 
-  const handleGenerateAISuggestions = () => {
-    toast.success('AI suggestions feature coming soon!');
+  const handleGenerateAISuggestions = async (ideaData) => {
+    try {
+      const suggestions = await aiService.getIdeaSuggestions(ideaData);
+      return suggestions;
+    } catch (error) {
+      toast.error(error.message || 'Failed to generate AI suggestions');
+      throw error;
+    }
   };
 
   return (

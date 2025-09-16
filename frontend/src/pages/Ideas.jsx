@@ -10,6 +10,7 @@ import { useIdeas } from '../hooks/useIdeas.js';
 import { IdeaCard } from '../components/ideas/IdeaCard.jsx';
 import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { Button } from '../components/common/Button.jsx';
+import { AISearch } from '../components/ai/AISearch.jsx';
 
 export const Ideas = () => {
   const [filters, setFilters] = useState({
@@ -69,21 +70,16 @@ export const Ideas = () => {
       {/* Search and Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <form onSubmit={handleSearch} className="flex-1">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Search ideas..."
-              />
-            </div>
-          </form>
+          {/* AI Search */}
+          <div className="flex-1">
+            <AISearch 
+              onSearch={(query) => {
+                setSearchQuery(query);
+                handleFilterChange('search', query);
+              }}
+              placeholder="Search ideas with AI assistance..."
+            />
+          </div>
 
           {/* Filter toggle */}
           <Button

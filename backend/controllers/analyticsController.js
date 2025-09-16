@@ -25,9 +25,20 @@ module.exports = {
             const totalUsers = await User.countDocuments();
             const totalIdeas = await Idea.countDocuments();
             const totalComments = await Comment.countDocuments();
+            
+            // นับเฉพาะ upvotes (type: 'up')
+            const totalUpvotes = await Vote.countDocuments({ type: 'up' });
+            
+            // นับ total votes ทั้งหมด
             const totalVotes = await Vote.countDocuments();
 
-            res.json({ totalUsers, totalIdeas, totalComments, totalVotes });
+            res.json({ 
+                totalUsers, 
+                totalIdeas, 
+                totalComments, 
+                totalUpvotes,
+                totalVotes 
+            });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }

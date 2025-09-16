@@ -10,6 +10,8 @@ const ideaRoutes = require('./routes/ideaRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const voteRoutes = require('./routes/voteRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+
 
 
 
@@ -35,6 +37,8 @@ app.use('/api/votes', voteRoutes);// "comment"
 app.use('/api/comments', commentRoutes);// "comment"
 app.use('/api/ideas', ideaRoutes); // ใช้ plural "ideas"
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes);
+
 
 
 // Test route สำหรับทดสอบ Models  
