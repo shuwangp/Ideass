@@ -6,7 +6,7 @@
 
 ## 🚀 สถานะปัจจุบัน
 
-- ภาษาหลัก: JavaScript / TypeScript :contentReference[oaicite:0]{index=0}  
+- ภาษาหลัก: JavaScript /:contentReference[oaicite:0]{index=0}  
 - มีส่วนประกอบหลัก: **frontend**, **backend** :contentReference[oaicite:1]{index=1}  
 - ยังไม่มี release อย่างเป็นทางการ :contentReference[oaicite:2]{index=2}  
 
@@ -24,7 +24,6 @@
 
 ---
 
-## 🛠 โครงสร้างโปรเจกต์
-
-ตัวโฟลเดอร์หลักที่สังเกต:
+Web 
+https://ideabubble.netlify.app/dashboard
 
