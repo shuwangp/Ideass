@@ -15,7 +15,6 @@ const aiRoutes = require('./routes/aiRoutes');
 
 
 
-
 // Load environment variables
 dotenv.config();
 
