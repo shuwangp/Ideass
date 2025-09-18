@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-// const API_BASE_URL = 'http://ai-powered-backend-env-2.eba-ybwywm7t.ap-southeast-1.elasticbeanstalk.com/api';
-const API_BASE_URL = "/api";
+// Prefer environment variable; fall back to localhost in dev, or "/api" when behind a proxy (e.g., Netlify)
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
+    : '/api');
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
