@@ -24,6 +24,4 @@
 
 ---
 
-Web 
-https://ideabubble.netlify.app/dashboard
 
