@@ -83,7 +83,7 @@ function AppContent() {
           <Route path="archive" element={<div>Archive Page - Coming Soon</div>} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="profile" element={<div>Profile Page - Coming Soon</div>} />
-          <Route path="settings" element={<div>Settings Page - Coming Soon</div>} />
+          <Route path="settings" element={<div>Hello CI/CD</div>} />
         </Route>
 
         {/* Catch all */}
