@@ -17,9 +17,13 @@ export const useAuth = create((set, get) => ({
   isAuthenticated: false,
   isLoading: true,
 
-  login: async (email, password) => {
+  login: async (identifier, password) => {
     try {
-      const authData = await authService.login({ email, password });
+      const payload =
+        typeof identifier === 'string' && identifier.includes('@')
+          ? { email: identifier, password }
+          : { username: identifier, password };
+      const authData = await authService.login(payload);
       set({ user: authData.user, isAuthenticated: true });
     } catch (error) {
       throw error;

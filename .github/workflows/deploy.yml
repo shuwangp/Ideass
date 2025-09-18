@@ -1,0 +1,39 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main   # ทำงานเมื่อ push เข้าสาขา main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies (Backend)
+        working-directory: ./backend
+        run: npm install
+
+      - name: Run tests (Backend)
+        working-directory: ./backend
+        run: npm test --if-present
+
+      - name: Install dependencies (Frontend)
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # 👉 ส่วนนี้เปลี่ยนตาม Cloud ที่คุณใช้
+      - name: Deploy to Render
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}

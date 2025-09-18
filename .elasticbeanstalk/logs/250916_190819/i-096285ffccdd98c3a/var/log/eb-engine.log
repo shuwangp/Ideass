@@ -1,0 +1,200 @@
+2025/09/16 12:01:41.454342 [INFO] Starting...
+2025/09/16 12:01:41.454407 [INFO] Starting EBPlatform-PlatformEngine
+2025/09/16 12:01:41.454491 [INFO] reading event message file
+2025/09/16 12:01:41.454834 [INFO] Engine received EB command userdata-exec
+
+2025/09/16 12:01:41.460323 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBAutoScalingGroup --region ap-southeast-1
+2025/09/16 12:01:41.760120 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBBeanstalkMetadata --region ap-southeast-1
+2025/09/16 12:01:42.110185 [INFO] This is a workflow controlled instance.
+2025/09/16 12:01:42.110258 [INFO] Engine command: (env-launch)
+
+2025/09/16 12:01:42.110598 [INFO] Executing instruction: SyncClock
+2025/09/16 12:01:42.110603 [INFO] Starting SyncClock
+2025/09/16 12:01:42.110612 [INFO] Running command: /usr/bin/chronyc tracking
+2025/09/16 12:01:42.115305 [INFO] Reference ID    : 00000000 ()
+Stratum         : 0
+Ref time (UTC)  : Thu Jan 01 00:00:00 1970
+System time     : 0.000000000 seconds slow of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 10.349 ppm slow
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 1.000000000 seconds
+Root dispersion : 1.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Not synchronised
+
+2025/09/16 12:01:42.115346 [INFO] Running command: /usr/bin/chronyc -a makestep
+2025/09/16 12:01:42.118191 [INFO] 200 OK
+
+2025/09/16 12:01:42.118256 [INFO] Skipping Configure OS
+2025/09/16 12:01:42.118262 [INFO] Skipping LockRepo
+2025/09/16 12:01:42.118266 [INFO] Skipping GenerateEBBanner
+2025/09/16 12:01:42.118271 [INFO] Skipping Install Process Manager
+2025/09/16 12:01:42.118275 [INFO] Skipping install syslog
+2025/09/16 12:01:42.118279 [INFO] Skipping install cron
+2025/09/16 12:01:42.118285 [INFO] Skipping install proxy
+2025/09/16 12:01:42.118291 [INFO] Skipping installhealthd
+2025/09/16 12:01:42.118295 [INFO] Skipping Install Log Streaming Manager
+2025/09/16 12:01:42.118300 [INFO] Skipping install X-Ray
+2025/09/16 12:01:42.118304 [INFO] Skipping install Third Party License
+2025/09/16 12:01:42.118308 [INFO] Skipping install httpd
+2025/09/16 12:01:42.118312 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:42.118315 [INFO] Executing instruction: installSqsd
+2025/09/16 12:01:42.118318 [INFO] This is a web server environment instance, skip install sqsd daemon ...
+2025/09/16 12:01:42.118321 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:42.118323 [INFO] Executing instruction: bootstraphealthd
+2025/09/16 12:01:42.118326 [INFO] this is an enhanced health env ...
+2025/09/16 12:01:42.118337 [INFO] bootstrap healthd....
+2025/09/16 12:01:42.118346 [INFO] Running command: /usr/bin/id -u healthd || /usr/sbin/useradd --user-group healthd -s /sbin/nologin --create-home
+2025/09/16 12:01:42.275781 [INFO] /usr/bin/id: ‘healthd’: no such user
+
+2025/09/16 12:01:42.276150 [INFO] bootstrap healthd....
+2025/09/16 12:01:42.276164 [INFO] Running command: /usr/bin/id -u healthd || /usr/sbin/useradd --user-group healthd -s /sbin/nologin --create-home
+2025/09/16 12:01:42.279381 [INFO] 1001
+
+2025/09/16 12:01:42.279675 [INFO] configure bundle log for healthd...
+2025/09/16 12:01:42.279735 [INFO] Executing instruction: GetSetupProxyLog
+2025/09/16 12:01:42.279809 [INFO] Skipping Install yum packages
+2025/09/16 12:01:42.279814 [INFO] Skipping Install default nodejs
+2025/09/16 12:01:42.279818 [INFO] Skipping MarkBaked
+2025/09/16 12:01:42.279822 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:42.279824 [INFO] Executing instruction: TuneSystemSettings
+2025/09/16 12:01:42.279828 [INFO] Starting TuneSystemSettings
+2025/09/16 12:01:42.279831 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:42.281961 [INFO] Executing instruction: GetSetupLogRotate
+2025/09/16 12:01:42.281967 [INFO] Initialize LogRotate files and directories
+2025/09/16 12:01:42.300856 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:42.300871 [INFO] Executing instruction: BootstrapCFNHup
+2025/09/16 12:01:42.300874 [INFO] Bootstrap cfn-hup
+2025/09/16 12:01:42.303179 [INFO] Copying file /opt/elasticbeanstalk/config/private/aws-eb-command-handler.conf to /etc/cfn/hooks.d/aws-eb-command-handler.conf
+2025/09/16 12:01:42.305460 [INFO] Executing instruction: StartCFNHup
+2025/09/16 12:01:42.305471 [INFO] Start cfn-hup
+2025/09/16 12:01:42.305502 [INFO] Running command: systemctl show -p PartOf cfn-hup.service
+2025/09/16 12:01:42.318830 [INFO] cfn-hup is not registered with EB yet, registering it now
+2025/09/16 12:01:42.318857 [INFO] Running command: systemctl show -p PartOf cfn-hup.service
+2025/09/16 12:01:42.332710 [INFO] Running command: systemctl daemon-reload
+2025/09/16 12:01:42.518333 [INFO] Running command: systemctl reset-failed
+2025/09/16 12:01:42.527328 [INFO] Running command: systemctl is-enabled aws-eb.target
+2025/09/16 12:01:42.535196 [INFO] Running command: systemctl enable aws-eb.target
+2025/09/16 12:01:42.761889 [INFO] Running command: systemctl start aws-eb.target
+2025/09/16 12:01:42.770921 [INFO] Running command: systemctl enable cfn-hup.service
+2025/09/16 12:01:43.005166 [INFO] Created symlink /etc/systemd/system/multi-user.target.wants/cfn-hup.service → /etc/systemd/system/cfn-hup.service.
+
+2025/09/16 12:01:43.005199 [INFO] Running command: systemctl is-active cfn-hup.service
+2025/09/16 12:01:43.013461 [INFO] cfn-hup process is not running, starting it now
+2025/09/16 12:01:43.013489 [INFO] Running command: systemctl show -p PartOf cfn-hup.service
+2025/09/16 12:01:43.023901 [INFO] Running command: systemctl is-active cfn-hup.service
+2025/09/16 12:01:43.031741 [INFO] Running command: systemctl start cfn-hup.service
+2025/09/16 12:01:43.109145 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:43.109161 [INFO] Executing instruction: SetupPublishLogCronjob
+2025/09/16 12:01:43.109164 [INFO] Setup publish logs cron job...
+2025/09/16 12:01:43.109168 [INFO] Copying file /opt/elasticbeanstalk/config/private/logtasks/cron/publishlogs to /etc/cron.d/publishlogs
+2025/09/16 12:01:43.111921 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:43.111948 [INFO] Executing instruction: MarkBootstrapped
+2025/09/16 12:01:43.111952 [INFO] Starting MarkBootstrapped
+2025/09/16 12:01:43.111970 [INFO] Instance has NOT been bootstrapped
+2025/09/16 12:01:43.112054 [INFO] Marked instance as Bootstrapped
+2025/09/16 12:01:43.112059 [INFO] Executing instruction: Save CFN Stack Info
+2025/09/16 12:01:43.112444 [INFO] Executing cleanup logic
+2025/09/16 12:01:43.112460 [INFO] Platform Engine finished execution on command: env-launch
+
+2025/09/16 12:04:08.332747 [INFO] Starting...
+2025/09/16 12:04:08.332796 [INFO] Starting EBPlatform-PlatformEngine
+2025/09/16 12:04:08.332816 [INFO] reading event message file
+2025/09/16 12:04:08.333143 [INFO] Engine received EB command cfn-hup-exec
+
+2025/09/16 12:04:08.394802 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBAutoScalingGroup --region ap-southeast-1
+2025/09/16 12:04:08.684980 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBBeanstalkMetadata --region ap-southeast-1
+2025/09/16 12:04:08.964461 [INFO] checking whether command app-deploy is applicable to this instance...
+2025/09/16 12:04:08.964474 [INFO] this command is applicable to the instance, thus instance should execute command
+2025/09/16 12:04:08.964476 [INFO] Engine command: (app-deploy)
+
+2025/09/16 12:04:08.964479 [INFO] Downloading EB Application...
+2025/09/16 12:04:08.964487 [INFO] Region: ap-southeast-1
+2025/09/16 12:04:08.964490 [INFO] envID: e-8ips2ekfyw
+2025/09/16 12:04:08.964494 [INFO] envBucket: elasticbeanstalk-ap-southeast-1-862191734675
+2025/09/16 12:04:08.964501 [INFO] accountID: 862191734675
+2025/09/16 12:04:08.964504 [INFO] Using manifest file name from command request
+2025/09/16 12:04:08.964509 [INFO] Unable to get version manifest file.
+2025/09/16 12:04:08.964511 [INFO] Downloading latest manifest available.
+2025/09/16 12:04:08.964513 [INFO] Download latest app version manifest
+2025/09/16 12:04:08.964660 [INFO] resources/environments/e-8ips2ekfyw/_runtime/versions/manifest
+2025/09/16 12:04:09.004921 [INFO] latestManifest key *: resources/environments/e-8ips2ekfyw/_runtime/versions/manifest_1758024041171
+
+2025/09/16 12:04:09.005182 [INFO] Downloading: bucket: elasticbeanstalk-ap-southeast-1-862191734675, object: resources/environments/e-8ips2ekfyw/_runtime/versions/manifest_1758024041171, expected bucket owner: 862191734675
+2025/09/16 12:04:09.040644 [INFO] Download successful169bytes downloaded
+2025/09/16 12:04:09.040734 [INFO] Trying to read and parse version manifest...
+2025/09/16 12:04:09.040815 [INFO] Downloading: bucket: elasticbeanstalk-ap-southeast-1-862191734675, object: resources/environments/e-8ips2ekfyw/_runtime/_versions/AI-Powered-Idea-Management/app-d25e-250916_190022632786, expected bucket owner: 862191734675
+2025/09/16 12:04:09.071611 [INFO] Download successful131909bytes downloaded
+2025/09/16 12:04:09.071849 [INFO] Executing instruction: ElectLeader
+2025/09/16 12:04:09.071857 [INFO] Running leader election for instance i-096285ffccdd98c3a...
+2025/09/16 12:04:09.071860 [INFO] Calling the cfn-elect-cmd-leader to elect the command leader.
+2025/09/16 12:04:09.071871 [INFO] Running command: /opt/aws/bin/cfn-elect-cmd-leader --stack arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 --command-name ElasticBeanstalkCommand-AWSEBAutoScalingGroup --invocation-id 17241573-2d33-47aa-a733-a793f1b737a2 --listener-id i-096285ffccdd98c3a --region ap-southeast-1
+2025/09/16 12:04:09.359725 [INFO] Instance is Leader.
+2025/09/16 12:04:09.359786 [INFO] Executing instruction: stopSqsd
+2025/09/16 12:04:09.359791 [INFO] This is a web server environment instance, skip stop sqsd daemon ...
+2025/09/16 12:04:09.359794 [INFO] Executing instruction: PreBuildEbExtension
+2025/09/16 12:04:09.359796 [INFO] Starting executing the config set Infra-EmbeddedPreBuild.
+2025/09/16 12:04:09.359807 [INFO] Running command: /opt/aws/bin/cfn-init -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBAutoScalingGroup --region ap-southeast-1 --configsets Infra-EmbeddedPreBuild
+2025/09/16 12:04:09.658299 [INFO] Finished executing the config set Infra-EmbeddedPreBuild.
+
+2025/09/16 12:04:09.658323 [INFO] Executing instruction: StageApplication
+2025/09/16 12:04:09.658326 [INFO] Recreating /var/app/staging/
+2025/09/16 12:04:09.658514 [INFO] extracting /opt/elasticbeanstalk/deployment/app_source_bundle to /var/app/staging/
+2025/09/16 12:04:09.658527 [INFO] Running command: /usr/bin/unzip -q -o /opt/elasticbeanstalk/deployment/app_source_bundle -d /var/app/staging/
+2025/09/16 12:04:09.669530 [INFO] finished extracting /opt/elasticbeanstalk/deployment/app_source_bundle to /var/app/staging/ successfully
+2025/09/16 12:04:09.670777 [INFO] Executing instruction: RunAppDeployPreBuildHooks
+2025/09/16 12:04:09.670834 [INFO] Executing platform hooks in .platform/hooks/prebuild/
+2025/09/16 12:04:09.670848 [INFO] The dir .platform/hooks/prebuild/ does not exist
+2025/09/16 12:04:09.670851 [INFO] Finished running scripts in /var/app/staging/.platform/hooks/prebuild
+2025/09/16 12:04:09.670856 [INFO] Executing instruction: Install customer specified node.js version
+2025/09/16 12:04:09.670890 [INFO] Executing instruction: Use NPM to install dependencies
+2025/09/16 12:04:09.670898 [INFO] there is no package.json file, skip installing dependencies
+2025/09/16 12:04:09.670900 [INFO] Executing instruction: check Procfile
+2025/09/16 12:04:09.670902 [INFO] checking Procfile
+2025/09/16 12:04:09.670908 [INFO] no Procfile found, generating Procfile
+2025/09/16 12:04:09.670910 [INFO] checking package.json file
+2025/09/16 12:04:09.670920 [INFO] checking app.js file from source
+2025/09/16 12:04:09.670925 [INFO] checking server.js file from source
+2025/09/16 12:04:09.670943 [ERROR] An error occurred during execution of command [app-deploy] - [check Procfile]. Stop running the command. Error: node.js may have issues starting. Please provide a package.json file or add server.js/app.js file in source bundle 
+
+2025/09/16 12:04:09.670946 [INFO] Executing cleanup logic
+2025/09/16 12:04:09.671007 [INFO] CommandService Response: {"status":"FAILURE","api_version":"1.0","results":[{"status":"FAILURE","msg":"Engine execution has encountered an error.","returncode":1,"events":[{"msg":"Instance deployment failed to generate a 'Procfile' for Node.js. Provide one of these files: 'package.json', 'server.js', or 'app.js'. The deployment failed.","timestamp":1758024249670,"severity":"ERROR"},{"msg":"Instance deployment failed. For details, see 'eb-engine.log'.","timestamp":1758024249670,"severity":"ERROR"}]}]}
+
+2025/09/16 12:04:09.671121 [INFO] Platform Engine finished execution on command: app-deploy
+
+2025/09/16 12:06:43.538505 [INFO] Starting...
+2025/09/16 12:06:43.538561 [INFO] Starting EBPlatform-PlatformEngine
+2025/09/16 12:06:43.538583 [INFO] reading event message file
+2025/09/16 12:06:43.538909 [INFO] Engine received EB command cfn-hup-exec
+
+2025/09/16 12:06:43.625470 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBAutoScalingGroup --region ap-southeast-1
+2025/09/16 12:06:43.955066 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBBeanstalkMetadata --region ap-southeast-1
+2025/09/16 12:06:44.268254 [INFO] checking whether command tail-log is applicable to this instance...
+2025/09/16 12:06:44.268266 [INFO] this command is applicable to the instance, thus instance should execute command
+2025/09/16 12:06:44.268269 [INFO] Engine command: (tail-log)
+
+2025/09/16 12:06:44.268318 [INFO] Executing instruction: GetTailLogs
+2025/09/16 12:06:44.268321 [INFO] Tail Logs...
+2025/09/16 12:06:44.268843 [INFO] Running command: tail -n 100 /var/log/eb-engine.log
+2025/09/16 12:06:44.271167 [INFO] Running command: tail -n 100 /var/log/eb-hooks.log
+2025/09/16 12:06:44.327056 [INFO] Executing cleanup logic
+2025/09/16 12:06:44.327134 [INFO] CommandService Response: {"status":"SUCCESS","api_version":"1.0","results":[{"status":"SUCCESS","msg":"Engine execution has succeeded.","returncode":0,"events":[{"msg":"Instance deployment completed successfully.","timestamp":1758024404327,"severity":"INFO"}]}]}
+
+2025/09/16 12:06:44.327153 [INFO] Platform Engine finished execution on command: tail-log
+
+2025/09/16 12:08:15.309004 [INFO] Starting...
+2025/09/16 12:08:15.309057 [INFO] Starting EBPlatform-PlatformEngine
+2025/09/16 12:08:15.309084 [INFO] reading event message file
+2025/09/16 12:08:15.309417 [INFO] Engine received EB command cfn-hup-exec
+
+2025/09/16 12:08:15.383279 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBAutoScalingGroup --region ap-southeast-1
+2025/09/16 12:08:15.676793 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:ap-southeast-1:862191734675:stack/awseb-e-8ips2ekfyw-stack/c4aef040-92f4-11f0-b0c9-02c53a55a1e1 -r AWSEBBeanstalkMetadata --region ap-southeast-1
+2025/09/16 12:08:15.962337 [INFO] checking whether command bundle-log is applicable to this instance...
+2025/09/16 12:08:15.962349 [INFO] this command is applicable to the instance, thus instance should execute command
+2025/09/16 12:08:15.962351 [INFO] Engine command: (bundle-log)
+
+2025/09/16 12:08:15.962392 [INFO] Executing instruction: GetBundleLogs
+2025/09/16 12:08:15.962395 [INFO] Bundle Logs...
