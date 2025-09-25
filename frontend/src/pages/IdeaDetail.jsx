@@ -69,7 +69,12 @@ export const IdeaDetail = () => {
   const canEdit =
     user &&
     (["admin", "moderator"].includes(user.role) ||
-      idea?.author?._id === (user.id || user._id));
+      idea?.author?._id === user._id ||
+      idea?.author?._id === user.id ||
+      idea?.author === user._id ||
+      idea?.author === user.id ||
+      idea?.author?.id === user._id ||
+      idea?.author?.id === user.id);
 
   if (isLoading)
     return (

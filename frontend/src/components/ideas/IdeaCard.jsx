@@ -6,13 +6,18 @@ import {
   ChatBubbleLeftIcon, 
   CalendarIcon,
   TagIcon,
-  EyeIcon
+  EyeIcon,
+  TrashIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { formatDistanceToNow } from 'date-fns';
 import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { voteService } from '../../services/voteService.js';
+import { useDeleteIdea } from '../../hooks/useIdeas.js';
+import { useAuth } from '../../hooks/useAuth.js';
+import toast from 'react-hot-toast';
 
 /**
  * @param {Object} props
@@ -22,12 +27,20 @@ import { voteService } from '../../services/voteService.js';
  */
 export const IdeaCard = ({ idea, onVote, onFavorite }) => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const deleteIdeaMutation = useDeleteIdea();
   const [isVoted, setIsVoted] = React.useState(false);
   const [voteCount, setVoteCount] = React.useState(() => (
     typeof idea.totalUpvotes === 'number' ? idea.totalUpvotes : (idea.votes?.length || 0)
   ));
 
   const ideaId = idea._id || idea.id;
+  const isOwner = user?._id === idea.author?._id || 
+                  user?._id === idea.author ||
+                  user?.id === idea.author?._id ||
+                  user?.id === idea.author ||
+                  user?._id === idea.author?.id ||
+                  user?.id === idea.author?.id;
 
   const voteMutation = useMutation({
     mutationFn: ({ action }) => {
@@ -75,6 +88,20 @@ export const IdeaCard = ({ idea, onVote, onFavorite }) => {
     onFavorite?.(idea._id || idea.id);
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (window.confirm('Are you sure you want to delete this idea? This action cannot be undone.')) {
+      try {
+        await deleteIdeaMutation.mutateAsync(ideaId);
+        toast.success('Idea deleted successfully!');
+      } catch (error) {
+        toast.error(error.message || 'Failed to delete idea');
+      }
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -94,6 +121,28 @@ export const IdeaCard = ({ idea, onVote, onFavorite }) => {
                 {idea.description}
               </p>
             </div>
+            
+            {/* Action buttons for owner */}
+            {isOwner && (
+              <div className="flex items-center space-x-2 ml-4">
+                <Link
+                  to={`/ideas/${ideaId}/edit`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Edit idea"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </Link>
+                <button
+                  onClick={handleDelete}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Delete idea"
+                  disabled={deleteIdeaMutation.isPending}
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Tags */}

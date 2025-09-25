@@ -29,9 +29,67 @@ router.post('/', authenticateToken, async (req, res) => {
 // READ all ideas พร้อมจำนวนคอมเมนต์
 router.get('/', async (req, res) => {
     try {
-        const ideas = await Idea.find()
+        const { 
+            search, 
+            category, 
+            status, 
+            priority, 
+            tags, 
+            sortBy = 'createdAt', 
+            sortOrder = 'desc',
+            page = 1,
+            limit = 12
+        } = req.query;
+
+        // Build query object
+        const query = {};
+        
+        // Search functionality
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { tags: { $in: [new RegExp(search, 'i')] } }
+            ];
+        }
+
+        // Filter by category
+        if (category) {
+            query.category = category;
+        }
+
+        // Filter by status
+        if (status) {
+            query.status = status;
+        }
+
+        // Filter by priority
+        if (priority) {
+            query.priority = priority;
+        }
+
+        // Filter by tags
+        if (tags) {
+            const tagArray = Array.isArray(tags) ? tags : [tags];
+            query.tags = { $in: tagArray };
+        }
+
+        // Calculate pagination
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        
+        // Build sort object
+        const sortObj = {};
+        sortObj[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+        // Get total count for pagination
+        const total = await Idea.countDocuments(query);
+
+        // Get ideas with pagination
+        const ideas = await Idea.find(query)
             .populate('author', 'username firstName lastName avatar')
-            .sort({ createdAt: -1 });
+            .sort(sortObj)
+            .skip(skip)
+            .limit(parseInt(limit));
 
         // ดึงจำนวนคอมเมนต์แต่ละไอเดีย
         const results = await Promise.all(
@@ -46,9 +104,18 @@ router.get('/', async (req, res) => {
             })
         );
 
-        res.json(results);
+        // Return paginated response
+        res.json({
+            success: true,
+            data: {
+                ideas: results,
+                total,
+                page: parseInt(page),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ success: false, message: err.message });
     }
 });
 
@@ -115,18 +182,27 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const idea = await Idea.findById(req.params.id);
-        if (!idea) return res.status(404).json({ message: 'Idea not found' });
+        if (!idea) return res.status(404).json({ success: false, message: 'Idea not found' });
 
         const isOwner = idea.author && idea.author.toString() === req.user._id.toString();
         const isAdmin = req.user.role === 'admin';
         if (!isOwner && !isAdmin) {
-            return res.status(403).json({ message: 'Not authorized to delete this idea' });
+            return res.status(403).json({ success: false, message: 'Not authorized to delete this idea' });
         }
 
-        await Idea.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Idea deleted', idea });
+        // ลบไอเดียและข้อมูลที่เกี่ยวข้อง (cascade delete)
+        await Promise.all([
+            // ลบไอเดีย
+            Idea.findByIdAndDelete(req.params.id),
+            // ลบ comments ที่เกี่ยวข้อง
+            Comment.deleteMany({ idea: req.params.id }),
+            // ลบ votes ที่เกี่ยวข้อง
+            Vote.deleteMany({ idea: req.params.id })
+        ]);
+        
+        res.json({ success: true, message: 'Idea and related data deleted successfully', data: idea });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ success: false, message: err.message });
     }
 });
 

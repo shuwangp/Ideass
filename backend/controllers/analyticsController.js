@@ -24,10 +24,11 @@ module.exports = {
         try {
             const totalUsers = await User.countDocuments();
             const totalIdeas = await Idea.countDocuments();
-            const totalComments = await Comment.countDocuments();
+            // นับเฉพาะ comments ที่ไม่ถูกลบ
+            const totalComments = await Comment.countDocuments({ isDeleted: { $ne: true } });
             
-            // นับเฉพาะ upvotes (type: 'up')
-            const totalUpvotes = await Vote.countDocuments({ type: 'up' });
+            // นับเฉพาะ upvotes (type: 'upvote')
+            const totalUpvotes = await Vote.countDocuments({ type: 'upvote' });
             
             // นับ total votes ทั้งหมด
             const totalVotes = await Vote.countDocuments();

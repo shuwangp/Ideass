@@ -197,18 +197,6 @@ export const AIAssistant = ({ idea, onSuggestionUpdate }) => {
                   </div>
                 )}
 
-                {suggestions.implementationSteps && suggestions.implementationSteps.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Implementation Steps:</h4>
-                    <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                      <ol className="list-decimal list-inside space-y-1">
-                        {suggestions.implementationSteps.map((step, index) => (
-                          <li key={index} className="text-gray-800">{step}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 

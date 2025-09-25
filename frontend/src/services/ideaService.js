@@ -45,14 +45,17 @@ class IdeaService {
     }
 
     const response = await api.get(`/ideas?${params}`);
-    // backend ไม่ได้ส่ง success/data แบบเดียวกับ frontend เดิม
-    if (Array.isArray(response.data)) {
-      // กรณี backend ส่ง array ตรงๆ
-      return { ideas: response.data, total: response.data.length, page: 1, totalPages: 1 };
-    }
-    if (response.data.success) {
+    
+    // Handle new backend response format
+    if (response.data.success && response.data.data) {
       return response.data.data;
     }
+    
+    // Fallback for old format
+    if (Array.isArray(response.data)) {
+      return { ideas: response.data, total: response.data.length, page: 1, totalPages: 1 };
+    }
+    
     throw new Error(response.data.message || 'Failed to fetch ideas');
   }
 
@@ -125,7 +128,7 @@ class IdeaService {
   async deleteIdea(id) {
     try {
       const response = await api.delete(`/ideas/${id}`);
-      if (response.data && response.data.message === 'Idea deleted') {
+      if (response.data.success) {
         return true;
       }
       throw new Error(response.data.message || 'Failed to delete idea');

@@ -26,7 +26,9 @@ export const EditIdea = () => {
     try {
       await updateIdea.mutateAsync({ id, ...data });
       navigate(`/ideas/${id}`);
-    } catch (e) {}
+    } catch (e) {
+      console.error('EditIdea - Update error:', e);
+    }
   };
 
   return (

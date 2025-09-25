@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -67,12 +67,24 @@ export const IdeaEditor = ({
       description: idea?.description || '',
       category: idea?.category || '',
       tags: idea?.tags || [],
-      status: idea?.status || 'draft',
+      status: idea?.status === 'pending' ? 'draft' : idea?.status === 'approved' ? 'published' : idea?.status || 'draft',
       priority: idea?.priority || 'medium',
     },
   });
 
   const currentTags = watch('tags') || [];
+
+  // Update form values when idea data changes
+  useEffect(() => {
+    if (idea) {
+      setValue('title', idea.title || '');
+      setValue('description', idea.description || '');
+      setValue('category', idea.category || '');
+      setValue('tags', idea.tags || []);
+      setValue('status', idea.status === 'pending' ? 'draft' : idea.status === 'approved' ? 'published' : 'draft');
+      setValue('priority', idea.priority || 'medium');
+    }
+  }, [idea, setValue]);
 
   const handleSubmitForm = (data) => {
     if (idea) {

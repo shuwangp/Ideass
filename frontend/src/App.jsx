@@ -16,6 +16,7 @@ import { NewIdea } from './pages/NewIdea.jsx';
 import { IdeaDetail } from './pages/IdeaDetail.jsx';
 import { EditIdea } from './pages/EditIdea.jsx';
 import { Analytics } from './pages/Analytics.jsx';
+import { Profile } from './pages/Profile.jsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,12 +78,11 @@ function AppContent() {
           <Route path="ideas/:id" element={<IdeaDetail />} />
           <Route path="ideas/:id/edit" element={<EditIdea />} />
           <Route path="ideas/new" element={<NewIdea />} />
-          <Route path="categories" element={<div>Categories Page - Coming Soon</div>} />
           <Route path="tags" element={<div>Tags Page - Coming Soon</div>} />
           <Route path="favorites" element={<div>Favorites Page - Coming Soon</div>} />
           <Route path="archive" element={<div>Archive Page - Coming Soon</div>} />
           <Route path="analytics" element={<Analytics />} />
-          <Route path="profile" element={<div>Profile Page - Coming Soon</div>} />
+          <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<div>settings-Coming Soon</div>} />
         </Route>
 

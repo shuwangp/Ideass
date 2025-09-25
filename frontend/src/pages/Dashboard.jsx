@@ -142,7 +142,7 @@ export const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -156,7 +156,13 @@ export const Dashboard = () => {
                 </div>
                 <h3 className="ml-4 text-lg font-medium text-gray-900">Create New Idea</h3>
               </div>
-              <p className="text-gray-600">Capture your latest inspiration with AI assistance.</p>
+              <p className="text-gray-600 mb-4">Capture your latest inspiration with AI assistance.</p>
+              <div className="flex items-center text-blue-600 text-sm font-medium">
+                <span>Get Started</span>
+                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
             </div>
           </Link>
         </motion.div>
@@ -174,25 +180,13 @@ export const Dashboard = () => {
                 </div>
                 <h3 className="ml-4 text-lg font-medium text-gray-900">View Analytics</h3>
               </div>
-              <p className="text-gray-600">Track your idea creation and engagement patterns.</p>
-            </div>
-          </Link>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Link to="/categories" className="block">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center mb-4">
-                <div className="bg-purple-100 p-3 rounded-lg">
-                  <LightBulbIcon className="h-6 w-6 text-purple-600" />
-                </div>
-                <h3 className="ml-4 text-lg font-medium text-gray-900">Browse Categories</h3>
+              <p className="text-gray-600 mb-4">Track your idea creation and engagement patterns.</p>
+              <div className="flex items-center text-green-600 text-sm font-medium">
+                <span>View Insights</span>
+                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
-              <p className="text-gray-600">Explore ideas organized by categories and topics.</p>
             </div>
           </Link>
         </motion.div>

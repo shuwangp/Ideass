@@ -31,7 +31,6 @@ export const Sidebar = ({ isOpen = true, onClose }) => {
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, activeIcon: HomeIconSolid },
     { name: 'All Ideas', href: '/ideas', icon: LightBulbIcon, activeIcon: LightBulbIconSolid },
     { name: 'Create Idea', href: '/ideas/new', icon: PlusIcon, activeIcon: PlusIcon },
-    { name: 'Categories', href: '/categories', icon: FolderIcon, activeIcon: FolderIconSolid },
     { name: 'Tags', href: '/tags', icon: TagIcon, activeIcon: TagIcon },
     { name: 'Favorites', href: '/favorites', icon: StarIcon, activeIcon: StarIcon },
     { name: 'Archive', href: '/archive', icon: ArchiveBoxIcon, activeIcon: ArchiveBoxIcon },

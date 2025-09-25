@@ -10,7 +10,7 @@
     "init": "^0.1.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.0",
-    "openai": "^5.20.1"
+    "openai": "^5.23.0"
   },
   "scripts": {
     "start": "node server.js",

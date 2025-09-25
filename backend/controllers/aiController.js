@@ -1,10 +1,19 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const rateLimit = require('express-rate-limit');
 
-// Initialize Google AI (only if API key is available)
+// Initialize AI services (only if API keys are available)
 let genAI = null;
+let openai = null;
+
 if (process.env.GOOGLE_API_KEY) {
   genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+}
+
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 }
 
 // Rate limiting for AI endpoints
@@ -56,17 +65,14 @@ exports.suggestIdeaImprovement = async (req, res) => {
 {
   "improvedTitle": "หัวข้อใหม่ที่ชัดเจน ดึงดูด และสะท้อนคุณค่า",
   "improvedDescription": "คำอธิบายแบบย่อ 5-8 ประโยค ครอบคลุมกลุ่มเป้าหมาย ปัญหา/คุณค่า ฟีเจอร์หลัก ความแตกต่าง กลยุทธ์เปิดตัว/ขยาย และแนวทางรายได้",
-  "suggestedTags": ["แท็ก1", "แท็ก2", "แท็ก3"],
-  "implementationSteps": ["ลำดับขั้นเริ่มต้น 4-6 ข้อที่ทำได้จริง"],
-  "potentialChallenges": ["อุปสรรคสำคัญ 2-5 ข้อพร้อมมุมรับมืออย่างสั้น"],
-  "successMetrics": ["ตัวชี้วัดผลลัพธ์ที่วัดได้ 3-6 รายการ"]
+  "suggestedTags": ["แท็ก1", "แท็ก2", "แท็ก3"]
 }
 
 ตอบเฉพาะ JSON ภาษาไทยเท่านั้น ห้ามมีข้อความอื่นก่อนหรือหลัง JSON
 `;
 
     const model = genAI.getGenerativeModel({ 
-      model: process.env.AI_MODEL || 'gemini-1.5-flash',
+      model: process.env.AI_MODEL || 'gemini-1.5-pro',
       generationConfig: {
         maxOutputTokens: parseInt(process.env.AI_MAX_TOKENS) || 1000,
         temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.7,
@@ -93,14 +99,22 @@ exports.suggestIdeaImprovement = async (req, res) => {
           improvedTitle: title,
           improvedDescription: aiResponse,
           suggestedTags: tags || [],
-          implementationSteps: [],
-          potentialChallenges: [],
-          successMetrics: [],
         },
       });
     }
   } catch (error) {
     console.error('AI Suggestion Error:', error);
+    
+    // Handle quota exceeded error
+    if (error.message && error.message.includes('quota')) {
+      return res.status(429).json({
+        success: false,
+        message: 'AI quota exceeded. Free tier limit reached. Please try again tomorrow or upgrade your plan.',
+        error: 'Quota exceeded - Free tier limit reached',
+        retryAfter: '24 hours',
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'AI service is currently unavailable',
@@ -193,7 +207,7 @@ exports.analyzeIdeaConnections = async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: process.env.AI_MODEL || 'gemini-1.5-flash',
+      model: process.env.AI_MODEL || 'gemini-1.5-pro',
       generationConfig: {
         maxOutputTokens: parseInt(process.env.AI_MAX_TOKENS) || 1000,
         temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.7,
@@ -259,14 +273,19 @@ exports.getSearchSuggestions = async (req, res) => {
 }
 `;
 
-    const completion = await openai.chat.completions.create({
-      model: process.env.AI_MODEL || 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500,
-      temperature: 0.5,
+    const model = genAI.getGenerativeModel({ 
+      model: process.env.AI_MODEL || 'gemini-1.5-pro',
+      generationConfig: {
+        maxOutputTokens: parseInt(process.env.AI_MAX_TOKENS) || 500,
+        temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.5,
+      }
     });
 
-    const aiResponse = completion.choices[0].message.content;
+    const result = await model.generateContent(prompt);
+    let aiResponse = result.response.text();
+    
+    // ทำความสะอาด response - ลบ markdown formatting
+    aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     
     try {
       const suggestions = JSON.parse(aiResponse);
@@ -286,6 +305,17 @@ exports.getSearchSuggestions = async (req, res) => {
     }
   } catch (error) {
     console.error('AI Search Suggestions Error:', error);
+    
+    // Handle quota exceeded error
+    if (error.message && error.message.includes('quota')) {
+      return res.status(429).json({
+        success: false,
+        message: 'AI quota exceeded. Free tier limit reached. Please try again tomorrow or upgrade your plan.',
+        error: 'Quota exceeded - Free tier limit reached',
+        retryAfter: '24 hours',
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'AI search suggestions service is currently unavailable',
