@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Bio cannot exceed 500 characters']
     },
+    location: {
+        type: String,
+        trim: true,
+        maxlength: [100, 'Location cannot exceed 100 characters']
+    },
     isActive: {
         type: Boolean,
         default: true

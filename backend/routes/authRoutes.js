@@ -8,11 +8,15 @@ const {
     getCurrentUser,
     updateProfile,
     changePassword,
-    logoutUser
+    uploadAvatar,
+    logoutUser,
+    cleanupAvatars,
+    getAvatarStorageStats
 } = require('../controllers/authController');
 
 // Import middleware
 const { authenticateToken } = require('../middleware/auth');
+const { uploadAvatar: uploadMiddleware, debugUpload, handleUploadError } = require('../middleware/upload');
 const {
     validateUserRegistration,
     validateUserLogin,
@@ -44,9 +48,37 @@ router.put('/profile', authenticateToken, validateProfileUpdate, updateProfile);
 // @access  Private
 router.put('/change-password', authenticateToken, changePassword);
 
+// @route   POST /api/auth/upload-avatar
+// @desc    Upload user avatar
+// @access  Private
+router.post('/upload-avatar', authenticateToken, debugUpload, uploadMiddleware, handleUploadError, uploadAvatar);
+
 // @route   POST /api/auth/logout
 // @desc    Logout user
 // @access  Private
 router.post('/logout', authenticateToken, logoutUser);
+
+// @route   POST /api/auth/cleanup-avatars
+// @desc    Clean up unused avatar files
+// @access  Private (Admin only)
+router.post('/cleanup-avatars', authenticateToken, cleanupAvatars);
+
+// @route   GET /api/auth/avatar-stats
+// @desc    Get avatar storage statistics
+// @access  Private (Admin only)
+router.get('/avatar-stats', authenticateToken, getAvatarStorageStats);
+
+// @route   GET /api/auth/test-upload
+// @desc    Test upload functionality
+// @access  Private
+router.get('/test-upload', authenticateToken, (req, res) => {
+    const path = require('path');
+    res.json({
+        success: true,
+        message: 'Upload test endpoint',
+        user: req.user._id,
+        uploadsDir: path.join(__dirname, '../uploads/avatars')
+    });
+});
 
 module.exports = router;

@@ -85,17 +85,13 @@ const validateUserLogin = [
 
 // Update profile validation
 const validateProfileUpdate = [
-    body('firstName')
+    body('username')
         .optional()
         .trim()
-        .isLength({ min: 1, max: 50 })
-        .withMessage('First name cannot be empty and cannot exceed 50 characters'),
-    
-    body('lastName')
-        .optional()
-        .trim()
-        .isLength({ min: 1, max: 50 })
-        .withMessage('Last name cannot be empty and cannot exceed 50 characters'),
+        .isLength({ min: 3, max: 30 })
+        .withMessage('Username must be between 3 and 30 characters')
+        .matches(/^[\w\u0E00-\u0E7F\s]+$/)
+        .withMessage('Username can only contain letters, numbers, underscores, spaces, and Thai characters'),
     
     body('department')
         .optional()
@@ -108,6 +104,17 @@ const validateProfileUpdate = [
         .trim()
         .isLength({ max: 500 })
         .withMessage('Bio cannot exceed 500 characters'),
+    
+    body('avatar')
+        .optional()
+        .custom((value) => {
+            if (!value) return true; // Allow empty/null
+            // Allow URLs or paths starting with /uploads/
+            if (value.startsWith('/uploads/') || value.startsWith('http')) {
+                return true;
+            }
+            throw new Error('Avatar must be a valid URL or upload path');
+        }),
     
     handleValidationErrors
 ];

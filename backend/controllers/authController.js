@@ -1,5 +1,8 @@
 const User = require('../models/User');
 const { generateToken } = require('../middleware/auth');
+const path = require('path');
+const fs = require('fs');
+const { cleanupUnusedAvatars, getAvatarStats } = require('../utils/avatarCleanup');
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -176,15 +179,31 @@ const getCurrentUser = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { firstName, lastName, department, bio, avatar } = req.body;
+        const { username, department, bio, avatar } = req.body;
 
         // Build update object with only provided fields
         const updateData = {};
-        if (firstName !== undefined) updateData.firstName = firstName;
-        if (lastName !== undefined) updateData.lastName = lastName;
+        if (username !== undefined) {
+            // Check if username is already taken by another user
+            const existingUser = await User.findOne({ 
+                username: username, 
+                _id: { $ne: userId } 
+            });
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ชื่อผู้ใช้นี้ถูกใช้แล้ว'
+                });
+            }
+            updateData.username = username;
+        }
         if (department !== undefined) updateData.department = department;
         if (bio !== undefined) updateData.bio = bio;
-        if (avatar !== undefined) updateData.avatar = avatar;
+        if (avatar !== undefined) {
+            // Delete old avatar if updating to new one
+            await deleteOldAvatar(userId);
+            updateData.avatar = avatar;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
@@ -266,6 +285,119 @@ const changePassword = async (req, res) => {
     }
 };
 
+// Helper function to delete old avatar file
+const deleteOldAvatar = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        if (user && user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
+            const oldFilePath = path.join(__dirname, '..', user.avatar);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+                console.log(`Deleted old avatar: ${oldFilePath}`);
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting old avatar:', error);
+        // Don't throw error, just log it
+    }
+};
+
+// @desc    Upload avatar image
+// @route   POST /api/auth/upload-avatar
+// @access  Private
+const uploadAvatar = async (req, res) => {
+    try {
+        console.log('📤 Upload avatar request received');
+        console.log('📋 Request body:', req.body);
+        console.log('📁 Request file:', req.file);
+        console.log('👤 Request user:', req.user);
+        
+        if (!req.file) {
+            console.log('❌ No file provided in request');
+            return res.status(400).json({
+                success: false,
+                message: 'No image file provided'
+            });
+        }
+
+        const userId = req.user._id;
+        const filename = req.file.filename;
+        const filePath = req.file.path;
+        
+        console.log('📝 Generated filename:', filename);
+        console.log('📂 File path:', filePath);
+        
+        // Check if file actually exists on disk
+        const fs = require('fs');
+        if (!fs.existsSync(filePath)) {
+            console.log('❌ File does not exist on disk:', filePath);
+            
+            // Try to find the file with a different path format
+            const alternativePath = path.join(__dirname, '..', 'uploads', 'avatars', filename);
+            if (fs.existsSync(alternativePath)) {
+                console.log('✅ Found file at alternative path:', alternativePath);
+                req.file.path = alternativePath;
+            } else {
+                console.log('❌ File not found at any path');
+                return res.status(500).json({
+                    success: false,
+                    message: 'File upload failed - file not saved to disk'
+                });
+            }
+        }
+        
+        console.log('✅ File exists on disk');
+        
+        // Delete old avatar before updating
+        await deleteOldAvatar(userId);
+        
+        // Create the image URL
+        const imageUrl = `/uploads/avatars/${filename}`;
+        
+        console.log('🔗 Image URL:', imageUrl);
+        
+        // Update user's avatar in database
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { avatar: imageUrl },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            console.log('❌ User not found for update');
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        console.log('✅ User avatar updated in database');
+
+        // Set proper headers to avoid CORB issues
+        res.header('Content-Type', 'application/json');
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        
+        res.json({
+            success: true,
+            message: 'Avatar uploaded successfully',
+            data: {
+                imageUrl: imageUrl,
+                user: updatedUser.getPublicProfile()
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Upload avatar error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during avatar upload',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 // @desc    Logout user (client-side token removal)
 // @route   POST /api/auth/logout
 // @access  Private
@@ -288,11 +420,52 @@ const logoutUser = async (req, res) => {
     }
 };
 
+// @desc    Clean up unused avatar files
+// @route   POST /api/auth/cleanup-avatars
+// @access  Private (Admin only)
+const cleanupAvatars = async (req, res) => {
+    try {
+        await cleanupUnusedAvatars();
+        res.json({
+            success: true,
+            message: 'Avatar cleanup completed'
+        });
+    } catch (error) {
+        console.error('Cleanup avatars error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during avatar cleanup'
+        });
+    }
+};
+
+// @desc    Get avatar storage statistics
+// @route   GET /api/auth/avatar-stats
+// @access  Private (Admin only)
+const getAvatarStorageStats = async (req, res) => {
+    try {
+        const stats = await getAvatarStats();
+        res.json({
+            success: true,
+            data: stats
+        });
+    } catch (error) {
+        console.error('Get avatar stats error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error getting avatar stats'
+        });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getCurrentUser,
     updateProfile,
     changePassword,
-    logoutUser
+    uploadAvatar,
+    logoutUser,
+    cleanupAvatars,
+    getAvatarStorageStats
 };

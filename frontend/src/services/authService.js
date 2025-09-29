@@ -84,8 +84,12 @@ class AuthService {
   async getCurrentUser() {
     try {
       const response = await api.get('/auth/me');
-      return response.data.success ? response.data.data : null;
+      if (response.data.success) {
+        return response.data.data.user;
+      }
+      return null;
     } catch (error) {
+      console.error('Get current user error:', error);
       return null;
     }
   }
@@ -99,6 +103,64 @@ class AuthService {
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
       return null;
+    }
+  }
+
+  /**
+   * @param {{username?: string, department?: string, bio?: string, avatar?: string}} data
+   * @returns {Promise<import('../types/index.js').User>}
+   */
+  async updateProfile(data) {
+    try {
+      const response = await api.put('/auth/profile', data);
+      if (response.data.success) {
+        const updatedUser = response.data.data.user;
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
+      }
+      const err = new Error(response.data.message || 'Profile update failed');
+      if (response.data.errors) err.details = response.data.errors;
+      throw err;
+    } catch (error) {
+      if (error.response?.data) {
+        const err = new Error(error.response.data.message || 'Profile update failed');
+        if (error.response.data.errors) err.details = error.response.data.errors;
+        throw err;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * @param {File} imageFile
+   * @returns {Promise<string>} Returns the uploaded image URL
+   */
+  async uploadProfileImage(imageFile) {
+    try {
+      console.log('Uploading profile image:', imageFile);
+      console.log('File name:', imageFile.name);
+      console.log('File size:', imageFile.size);
+      console.log('File type:', imageFile.type);
+      
+      const formData = new FormData();
+      formData.append('avatar', imageFile);
+      
+      console.log('FormData created, sending request...');
+      const response = await api.post('/auth/upload-avatar', formData);
+      
+      console.log('Upload response:', response.data);
+
+      if (response.data.success) {
+        return response.data.data.imageUrl;
+      }
+      const err = new Error(response.data.message || 'Image upload failed');
+      throw err;
+    } catch (error) {
+      if (error.response?.data) {
+        const err = new Error(error.response.data.message || 'Image upload failed');
+        throw err;
+      }
+      throw error;
     }
   }
 

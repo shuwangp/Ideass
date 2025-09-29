@@ -35,6 +35,7 @@ router.get('/', async (req, res) => {
             status, 
             priority, 
             tags, 
+            author,
             sortBy = 'createdAt', 
             sortOrder = 'desc',
             page = 1,
@@ -72,6 +73,11 @@ router.get('/', async (req, res) => {
         if (tags) {
             const tagArray = Array.isArray(tags) ? tags : [tags];
             query.tags = { $in: tagArray };
+        }
+
+        // Filter by author
+        if (author) {
+            query.author = author;
         }
 
         // Calculate pagination

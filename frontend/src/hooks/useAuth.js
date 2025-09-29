@@ -52,22 +52,35 @@ export const useAuth = create((set, get) => ({
   initializeAuth: async () => {
     try {
       set({ isLoading: true });
-      const storedUser = authService.getStoredUser();
       
-      if (storedUser && authService.isAuthenticated()) {
-        // Verify token is still valid
+      if (authService.isAuthenticated()) {
+        // Always try to get current user from server to ensure token is valid
         const currentUser = await authService.getCurrentUser();
         if (currentUser) {
           set({ user: currentUser, isAuthenticated: true });
         } else {
+          // Token is invalid, clear stored data
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user');
           set({ user: null, isAuthenticated: false });
         }
+      } else {
+        set({ user: null, isAuthenticated: false });
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
+      // Clear stored data on error
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });
     }
+  },
+
+  updateUser: (updatedUser) => {
+    set({ user: updatedUser });
+    // Also update localStorage
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   },
 }));
