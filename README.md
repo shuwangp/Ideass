@@ -160,34 +160,6 @@ npm run dev
 
 ---
 
-## 🗂️ โครงสร้างโปรเจกต์ (Project Structure)
-
-```
-AI-Powered-Idea-Management/
-├── frontend/                 # React Frontend
-│   ├── src/
-│   │   ├── components/      # UI Components
-│   │   │   ├── ai/          # AI-related components
-│   │   ├── pages/           # Page Components
-│   │   ├── services/        # API Services
-│   │   ├── hooks/           # Custom Hooks
-│   │   └── config/          # Configuration
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/                 # Node.js Backend
-│   ├── controllers/         # Route Controllers
-│   ├── models/              # Database Models
-│   ├── routes/              # API Routes
-│   ├── middleware/          # Custom Middleware
-│   ├── utils/               # Utility Functions
-│   ├── config/              # Configuration
-│   └── server.js
-├── package.json            # Root package.json
-└── README.md
-```
-
----
-
 ## 🔌 API Endpoints หลัก
 
 ### Authentication
